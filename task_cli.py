@@ -99,10 +99,44 @@ elif sys.argv[1] == "delete": # Delete a task / Eliminar una tarea
                 error_message(f"Task with ID {sys.argv[2]} not found.")
 
 elif sys.argv[1] == "mark-in-progress":
-    print("Marcando la tarea como en progreso." + sys.argv[2])
+    if len(sys.argv) < 3:
+        error_message("This command requires a task ID.") # Este comando requiere un ID de tarea.
+    else:
+        with open("to-do-list.json", "r") as f:
+            data = list(json.load(f))
+            task_found = False
+            for task in data:
+                if task["id"] == sys.argv[2]:
+                    task["status"] = "in-progress"
+                    task["UpdatedAt"] = datetime.datetime.now().isoformat() + "Z"
+                    print(f"Task marked as in-progress (ID: {sys.argv[2]})")
+                    task_found = True
+                    y = json.dumps(data, indent=4)
+                    with open("to-do-list.json", "w") as f:
+                        f.write(y)
+                    break
+            if not task_found:
+                error_message(f"Task with ID {sys.argv[2]} not found.")
 
 elif sys.argv[1] == "mark-done":
-    print("Marcando la tarea como completada." + sys.argv[2])
+    if len(sys.argv) < 3:
+        error_message("This command requires a task ID.") # Este comando requiere un ID de tarea.
+    else:
+        with open("to-do-list.json", "r") as f:
+            data = list(json.load(f))
+            task_found = False
+            for task in data:
+                if task["id"] == sys.argv[2]:
+                    task["status"] = "done"
+                    task["UpdatedAt"] = datetime.datetime.now().isoformat() + "Z"
+                    print(f"Task marked as done (ID: {sys.argv[2]})")
+                    task_found = True
+                    y = json.dumps(data, indent=4)
+                    with open("to-do-list.json", "w") as f:
+                        f.write(y)
+                    break
+            if not task_found:
+                error_message(f"Task with ID {sys.argv[2]} not found.")
 
 elif sys.argv[1] == "list":
     if len(sys.argv) == 3:
