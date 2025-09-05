@@ -60,7 +60,7 @@ elif sys.argv[1] == "add": # Add a new task / Añadir una nueva tarea
 
 elif sys.argv[1] == "update": # Update a new task / Actualizar una tarea
     if len(sys.argv) < 4:
-        error_message("Update command requires a task ID and a new description.") # El comando Update requiere un ID de tarea y una nueva descripción.
+        error_message("Update command requires a valid task ID and a new description.") # El comando Update requiere un ID de tarea valido y una nueva descripción.
     else:
         with open("to-do-list.json", "r") as f:
             data = list(json.load(f))
@@ -81,7 +81,9 @@ elif sys.argv[1] == "update": # Update a new task / Actualizar una tarea
 
 elif sys.argv[1] == "delete": # Delete a task / Eliminar una tarea
     if len(sys.argv) < 3:
-        error_message("Delete command requires a task ID.") # El comando Delete requiere un ID de tarea.
+        error_message("Delete command requires a valid task ID.") # El comando Delete requiere un ID de tarea valido.
+    elif len(sys.argv) > 3:
+        error_message("Delete command only requires a valid task ID") # El comando Delete requiere solo un ID de tarea valido.
     else:
         with open("to-do-list.json", "r") as f:
             data = list(json.load(f))
@@ -100,7 +102,9 @@ elif sys.argv[1] == "delete": # Delete a task / Eliminar una tarea
 
 elif sys.argv[1] == "mark-in-progress":
     if len(sys.argv) < 3:
-        error_message("This command requires a task ID.") # Este comando requiere un ID de tarea.
+        error_message("This command requires a valid task ID.") # Este comando requiere un ID de tarea valido.
+    elif len(sys.argv) > 3:
+        error_message("This command only requires a valid task ID.") # Este comando solo requiere un ID de tarea valido.
     else:
         with open("to-do-list.json", "r") as f:
             data = list(json.load(f))
@@ -120,7 +124,9 @@ elif sys.argv[1] == "mark-in-progress":
 
 elif sys.argv[1] == "mark-done":
     if len(sys.argv) < 3:
-        error_message("This command requires a task ID.") # Este comando requiere un ID de tarea.
+        error_message("This command requires a valid task ID.") # Este comando requiere un ID de tarea valido.
+    elif len(sys.argv) > 3:
+        error_message("This command only requires a valid task ID.") # Este comando solo requiere un ID de tarea valido.
     else:
         with open("to-do-list.json", "r") as f:
             data = list(json.load(f))
@@ -138,15 +144,69 @@ elif sys.argv[1] == "mark-done":
             if not task_found:
                 error_message(f"Task with ID {sys.argv[2]} not found.")
 
-elif sys.argv[1] == "list":
-    if len(sys.argv) == 3:
+elif sys.argv[1] == "list": # List tasks / Listar tareas
+    if len(sys.argv) > 2:
         if sys.argv[2] == "done":
-            print("Mostrando tareas completadas")
-        elif sys.argv[2] == "todo":
-            print("Mostrando tareas por hacer")
-        elif sys.argv[2] == "in-progress":
-            print("Mostrando tareas en progreso")
+            with open("to-do-list.json", "r") as f:
+                data = list(json.load(f))
+                filtered_tasks = [task for task in data if task["status"] == "done"]
+                if filtered_tasks == []:
+                    print("No completed tasks found.") # No se encontraron tareas completadas.
+                else:
+                    print("\nCompleted tasks:")
+                    for task in filtered_tasks:
+                        print(f"\nID: {task['id']}")
+                        print(f"Description: {task['description']}")
+                        print(f"Status: {task['status']}")
+                        print(f"CreatedAt: {task['CreatedAt']}")
+                        print(f"UpdatedAt: {task['UpdatedAt']}\n")
+                        print("-" * 20)
+        elif sys.argv[2] == "todo": # List only to-do tasks / Listar solo tareas por hacer
+            with open("to-do-list.json", "r") as f:
+                data = list(json.load(f))
+                filtered_tasks = [task for task in data if task["status"] == "todo"]
+                if filtered_tasks == []:
+                    print("No to-do tasks found.") # No se encontraron tareas por hacer.
+                else:
+                    print("\nTo-do tasks:")
+                    for task in filtered_tasks:
+                        print(f"\nID: {task['id']}")
+                        print(f"Description: {task['description']}")
+                        print(f"Status: {task['status']}")
+                        print(f"CreatedAt: {task['CreatedAt']}")
+                        print(f"UpdatedAt: {task['UpdatedAt']}\n")
+                        print("-" * 20)
+
+        elif sys.argv[2] == "in-progress": # List only in-progress tasks / Listar solo tareas en progreso
+            with open("to-do-list.json", "r") as f:
+                data = list(json.load(f))
+                filtered_tasks = [task for task in data if task["status"] == "in-progress"]
+                if filtered_tasks == []:
+                    print("No In progress tasks found.") # No se encontraron tareas en progreso.
+                else:
+                    print("\n In progress tasks:")
+                    for task in filtered_tasks:
+                        print(f"\nID: {task['id']}")
+                        print(f"Description: {task['description']}")
+                        print(f"Status: {task['status']}")
+                        print(f"CreatedAt: {task['CreatedAt']}")
+                        print(f"UpdatedAt: {task['UpdatedAt']}\n")
+                        print("-" * 20)
+        else:
+            error_message("Unknown filter. Use 'done', 'todo', or 'in-progress'.") # Filtro desconocido. Usa 'done', 'todo' o 'in-progress'.
     else:
-        print("Mostrando todas las tareas.")
+        with open("to-do-list.json", "r") as f:
+            data = list(json.load(f))
+            if data == []:
+                print("No tasks found.") # No se encontraron tareas.
+            else:
+                print("\nAll tasks:")
+                for task in data:
+                    print(f"\nID: {task['id']}")
+                    print(f"Description: {task['description']}")
+                    print(f"Status: {task['status']}")
+                    print(f"CreatedAt: {task['CreatedAt']}")
+                    print(f"UpdatedAt: {task['UpdatedAt']}\n")
+                    print("-" * 20)
 else:
-    print("Comando no reconocido.")
+    print("Unknown command.") # Comando desconocido.
